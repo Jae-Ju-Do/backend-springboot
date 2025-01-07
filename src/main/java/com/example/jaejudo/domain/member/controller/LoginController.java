@@ -2,9 +2,9 @@ package com.example.jaejudo.domain.member.controller;
 
 import com.example.jaejudo.domain.member.service.LoginService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class LoginController {
 

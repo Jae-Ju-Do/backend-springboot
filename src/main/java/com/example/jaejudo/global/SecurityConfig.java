@@ -1,19 +1,21 @@
 package com.example.jaejudo.global;
 
 import com.example.jaejudo.domain.member.service.LoginService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.DelegatingSecurityContextRepository;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -21,6 +23,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final LoginService loginService;
+    private final AuthenticationConfiguration authenticationConfiguration;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -30,41 +33,37 @@ public class SecurityConfig {
         http.sessionManagement((session) ->
                 session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
+        // URL 권한 설정
+        http.authorizeHttpRequests(request->request
+                .requestMatchers("/**").permitAll());
+
         // JSON 로그인 설정
         http.formLogin(AbstractHttpConfigurer::disable)
                 .addFilterBefore(
-                        getLoginFilter(),
-                        JSONUsernamePasswordAuthenticationFilter.class
+                        getJSONLoginFilter(),
+                        UsernamePasswordAuthenticationFilter.class
                 );
 
         return http.build();
     }
 
     @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider() throws Exception {
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-
-        daoAuthenticationProvider.setUserDetailsService(loginService);
-        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
-
-        return daoAuthenticationProvider;
-    }
-
-    @Bean
     public AuthenticationManager authenticationManager() throws Exception {
-        DaoAuthenticationProvider provider = daoAuthenticationProvider();
-        provider.setPasswordEncoder(passwordEncoder());
-        return new ProviderManager(provider);
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    public JSONUsernamePasswordAuthenticationFilter getLoginFilter() throws Exception {
+    public JSONLoginFilter getJSONLoginFilter() throws Exception {
 
-        JSONUsernamePasswordAuthenticationFilter filter =
-                new JSONUsernamePasswordAuthenticationFilter();
-
+        JSONLoginFilter filter = new JSONLoginFilter();
         filter.setAuthenticationManager(authenticationManager());
-        return new JSONUsernamePasswordAuthenticationFilter();
+        filter.setSecurityContextRepository(
+                new DelegatingSecurityContextRepository(
+                        new RequestAttributeSecurityContextRepository(),
+                        new HttpSessionSecurityContextRepository()
+                )
+        );
+        return filter;
     }
 
     @Bean

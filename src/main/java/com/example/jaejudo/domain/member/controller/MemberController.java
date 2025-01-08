@@ -21,6 +21,8 @@ public class MemberController {
     public void newMember(@Valid @RequestBody JoinRequestDTO member,
                           BindingResult result) throws BindException {
 
+        // todo: 이메일 인증, 아이디 중복검사 버튼 분리
+        // todo: 여유 되면 전화번호 인증까지
         if (result.hasErrors()) {
             throw new BindException(result);
         }

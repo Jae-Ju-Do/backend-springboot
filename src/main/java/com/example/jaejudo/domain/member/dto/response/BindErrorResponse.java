@@ -1,4 +1,4 @@
-package com.example.jaejudo.domain.member.vo;
+package com.example.jaejudo.domain.member.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,7 +8,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class BindErrorResponseVo {
+public class BindErrorResponse {
 
     private final List<FieldError> fiendErrors;
 }

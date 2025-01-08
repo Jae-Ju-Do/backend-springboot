@@ -3,6 +3,7 @@ package com.example.jaejudo.domain.member.controller;
 import com.example.jaejudo.domain.member.vo.BindErrorResponseVo;
 import com.example.jaejudo.domain.member.vo.ErrorResponseVO;
 import com.example.jaejudo.global.exception.UserIdAlreadyExistsException;
+import jakarta.mail.MessagingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -24,6 +25,13 @@ public class MemberExceptionHandler {
     public ResponseEntity<ErrorResponseVO> handleUserIdAlreadyExistsException(UserIdAlreadyExistsException e) {
         return ResponseEntity.status(409).body(
                 new ErrorResponseVO("409", e.getMessage())
+        );
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<ErrorResponseVO> handleMessagingException(MessagingException e) {
+        return ResponseEntity.status(500).body(
+                new ErrorResponseVO("500", e.getMessage())
         );
     }
 }

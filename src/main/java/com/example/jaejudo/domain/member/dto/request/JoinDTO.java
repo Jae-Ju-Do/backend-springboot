@@ -1,4 +1,4 @@
-package com.example.jaejudo.domain.member.dto;
+package com.example.jaejudo.domain.member.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -8,7 +8,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class JoinRequestDTO {
+public class JoinDTO {
 
     @NotBlank(message = "이름을 입력해주세요.")
     private String name;

@@ -1,6 +1,6 @@
 package com.example.jaejudo.domain.member.service;
 
-import com.example.jaejudo.domain.member.dto.JoinRequestDTO;
+import com.example.jaejudo.domain.member.dto.request.JoinDTO;
 import com.example.jaejudo.domain.member.entity.Member;
 import com.example.jaejudo.domain.member.repository.MemberRepository;
 import com.example.jaejudo.global.exception.UserIdAlreadyExistsException;
@@ -15,24 +15,24 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public void join(JoinRequestDTO joinRequestDTO) throws UserIdAlreadyExistsException {
+    public void join(JoinDTO joinDTO) throws UserIdAlreadyExistsException {
 
-        String userId = joinRequestDTO.getUserId();
+        String userId = joinDTO.getUserId();
         if (memberRepository.existsByUserId(userId)) {
             throw new UserIdAlreadyExistsException(userId);
         }
 
-        memberRepository.save(createMember(joinRequestDTO));
+        memberRepository.save(createMember(joinDTO));
     }
 
-    private Member createMember(JoinRequestDTO joinRequestDTO) {
+    private Member createMember(JoinDTO joinDTO) {
 
         return Member.builder()
-                .name(joinRequestDTO.getName())
-                .number(joinRequestDTO.getNumber())
-                .email(joinRequestDTO.getEmail())
-                .userId(joinRequestDTO.getUserId())
-                .password(passwordEncoder.encode(joinRequestDTO.getPassword()))
+                .name(joinDTO.getName())
+                .number(joinDTO.getNumber())
+                .email(joinDTO.getEmail())
+                .userId(joinDTO.getUserId())
+                .password(passwordEncoder.encode(joinDTO.getPassword()))
                 .build();
     }
 }

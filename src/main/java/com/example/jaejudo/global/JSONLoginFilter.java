@@ -1,6 +1,6 @@
 package com.example.jaejudo.global;
 
-import com.example.jaejudo.domain.member.dto.LoginDTO;
+import com.example.jaejudo.domain.member.dto.request.LoginDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

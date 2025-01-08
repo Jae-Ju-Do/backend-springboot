@@ -1,0 +1,27 @@
+spring:
+    application:
+        name: jaejudo
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        password: ${DB_PASSWORD}
+        url: jdbc:mysql://localhost:3306/Jaejudo?useSSL=false&allowPublicKeyRetrieval=true&useUnicode=true&serverTimezone=Asia/Seoul
+        username: ${DB_NAME}
+    jpa:
+        hibernate:
+            ddl-auto: update
+        properties:
+            hibernate:
+                format_sql: true
+        show-sql: true
+    mail:
+        host: smtp.gmail.com
+        password: ${SMTP_PASSWORD}
+        port: 587
+        properties:
+            mail:
+                smtp:
+                    auth: true
+                    starttls:
+                        enable: true
+                    timeout: 5000
+        username: ${SMTP_ADDR}

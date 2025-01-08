@@ -1,6 +1,6 @@
 package com.example.jaejudo.global;
 
-import com.example.jaejudo.domain.member.dto.request.LoginDTO;
+import com.example.jaejudo.domain.member.dto.request.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +32,7 @@ public class JSONLoginFilter
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         try {
-            LoginDTO loginDTO = objectMapper.readValue(request.getInputStream(), LoginDTO.class);
+            LoginRequest loginDTO = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
 
             UsernamePasswordAuthenticationToken authRequest = getAuthRequest(loginDTO);
 
@@ -43,10 +43,10 @@ public class JSONLoginFilter
         }
     }
 
-    private static UsernamePasswordAuthenticationToken getAuthRequest(LoginDTO loginDTO) {
+    private static UsernamePasswordAuthenticationToken getAuthRequest(LoginRequest loginRequest) {
 
-        String userId = loginDTO.getUsername();
-        String password = loginDTO.getPassword();
+        String userId = loginRequest.getUsername();
+        String password = loginRequest.getPassword();
 
         if (userId == null || password == null) {
             throw new IllegalArgumentException("유효하지 않은 아이디 혹은 비밀번호입니다.");

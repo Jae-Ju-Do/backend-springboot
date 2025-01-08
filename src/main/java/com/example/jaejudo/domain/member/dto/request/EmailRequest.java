@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class EmailDTO {
+public class EmailRequest {
     private String email;
 }

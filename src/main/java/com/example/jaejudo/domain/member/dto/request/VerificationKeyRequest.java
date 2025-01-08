@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class VerificationKeyDTO {
+public class VerificationKeyRequest {
 
     private String key;
 }

@@ -1,7 +1,7 @@
 package com.example.jaejudo.domain.member.controller;
 
-import com.example.jaejudo.domain.member.dto.request.EmailDTO;
-import com.example.jaejudo.domain.member.dto.request.VerificationKeyDTO;
+import com.example.jaejudo.domain.member.dto.request.EmailRequest;
+import com.example.jaejudo.domain.member.dto.request.VerificationKeyRequest;
 import com.example.jaejudo.domain.member.service.EmailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,12 +15,12 @@ public class EmailController {
 
     @ResponseBody
     @RequestMapping(value = "/members/sendEmail", method = RequestMethod.POST)
-    public void sendEmail(@RequestBody @Valid EmailDTO email) {
+    public void sendEmail(@RequestBody @Valid EmailRequest email) {
         emailService.sendEmail(email.getEmail());
     }
 
     @RequestMapping(value = "/members/verifyEmail", method = RequestMethod.POST)
-    public void verifyEmail(@RequestBody VerificationKeyDTO key) {
+    public void verifyEmail(@RequestBody VerificationKeyRequest key) {
         emailService.verifyEmail(key.getKey());
     }
 }

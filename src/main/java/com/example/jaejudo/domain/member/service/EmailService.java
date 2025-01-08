@@ -33,6 +33,7 @@ public class EmailService {
     public boolean verifyEmail(String key) {
 
         // todo: 동시에 여러명 로그인하면 문제생길듯? 리팩토링 필요
+        // https://deftkang.tistory.com/293
         if (key.equals(this.key)) {
             log.info("Verify email successful");
             this.key = null;

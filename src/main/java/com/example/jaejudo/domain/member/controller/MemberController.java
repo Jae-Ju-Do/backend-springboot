@@ -1,6 +1,6 @@
 package com.example.jaejudo.domain.member.controller;
 
-import com.example.jaejudo.domain.member.dto.request.JoinDTO;
+import com.example.jaejudo.domain.member.dto.request.JoinRequest;
 import com.example.jaejudo.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @RequestMapping(value = "/members/new", method = RequestMethod.POST)
-    public void newMember(@Valid @RequestBody JoinDTO member,
+    public void newMember(@Valid @RequestBody JoinRequest member,
                           BindingResult result) throws BindException {
 
         // todo: 이메일 인증, 아이디 중복검사 버튼 분리

@@ -1,6 +1,7 @@
-package com.example.jaejudo.global;
+package com.example.jaejudo.global.config;
 
 import com.example.jaejudo.domain.member.service.LoginService;
+import com.example.jaejudo.global.JSONLoginFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

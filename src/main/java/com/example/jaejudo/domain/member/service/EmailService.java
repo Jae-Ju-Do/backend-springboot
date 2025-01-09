@@ -1,48 +1,69 @@
 package com.example.jaejudo.domain.member.service;
 
+import com.example.jaejudo.global.config.RedisConfig;
+import com.example.jaejudo.global.exception.CannotSendMailException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class EmailService {
 
+    // bean
     private final JavaMailSender mailSender;
-    private final String emailSender = System.getenv("SMTP_ADDR");
-    private String key;
+    private final RedisConfig redisConfig;
 
-    public void sendEmail(String emailReceiver) {
+    @Value("${spring.mail.username}")
+    private String emailSender;
 
-        key = generateKey();
+    // 이메일 발송
+    public String sendEmail(String emailReceiver) {
+
+        String key = generateKey();
         try {
             MimeMessage message = createMessage(emailReceiver, key);
             mailSender.send(message);
             log.info("Sent email to {}", emailReceiver);
+
+            ValueOperations<String, Object> operations
+                    = redisConfig.redisTemplate().opsForValue();
+            operations.set(emailReceiver, key, 180, TimeUnit.SECONDS);
+
+            return key;
         } catch (Exception e) {
             log.error(e.getMessage());
+            throw new CannotSendMailException();
         }
     }
 
-    public boolean verifyEmail(String key) {
+    // 인증코드 확인
+    public boolean verifyEmail(String email, String key) {
 
-        // todo: 동시에 여러명 로그인하면 문제생길듯? 리팩토링 필요
-        // https://deftkang.tistory.com/293
-        if (key.equals(this.key)) {
+        ValueOperations<String, Object> operations
+                = redisConfig.redisTemplate().opsForValue();
+        String redisKey = (String) operations.get(email);
+
+        assert redisKey != null;
+        if (redisKey.equals(key)) {
             log.info("Verify email successful");
-            this.key = null;
             return true;
         }
+
         log.info("Verify email failed");
         return false;
     }
 
+    // 이메일 생성
     private MimeMessage createMessage(String emailReceiver, String key) throws MessagingException {
 
         MimeMessage message = mailSender.createMimeMessage();
@@ -60,6 +81,7 @@ public class EmailService {
         return message;
     }
 
+    // 인증코드 생성
     private String generateKey() {
 
         SecureRandom random = new SecureRandom();

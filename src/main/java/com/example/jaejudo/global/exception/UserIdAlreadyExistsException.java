@@ -1,8 +1,12 @@
 package com.example.jaejudo.global.exception;
 
+import com.example.jaejudo.global.exception.errorcode.ErrorCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public class UserIdAlreadyExistsException extends RuntimeException {
 
-    public UserIdAlreadyExistsException(String userId) {
-        super(userId + " 는 이미 존재하는 아이디 입니다.");
-    }
+    private final ErrorCode errorCode;
 }

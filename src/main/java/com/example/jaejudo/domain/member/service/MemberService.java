@@ -4,6 +4,7 @@ import com.example.jaejudo.domain.member.dto.request.JoinRequest;
 import com.example.jaejudo.domain.member.entity.Member;
 import com.example.jaejudo.domain.member.repository.MemberRepository;
 import com.example.jaejudo.global.exception.UserIdAlreadyExistsException;
+import com.example.jaejudo.global.exception.errorcode.MemberErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ public class MemberService {
 
         String userId = joinRequest.getUserId();
         if (memberRepository.existsByUserId(userId)) {
-            throw new UserIdAlreadyExistsException(userId);
+            throw new UserIdAlreadyExistsException(MemberErrorCode.USER_ID_ALREADY_EXISTS);
         }
 
         memberRepository.save(createMember(joinRequest));

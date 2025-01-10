@@ -2,6 +2,7 @@ package com.example.jaejudo.domain.member.service;
 
 import com.example.jaejudo.global.config.RedisConfig;
 import com.example.jaejudo.global.exception.CannotSendMailException;
+import com.example.jaejudo.global.exception.errorcode.CommonErrorCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -42,7 +43,7 @@ public class EmailService {
             return key;
         } catch (Exception e) {
             log.error(e.getMessage());
-            throw new CannotSendMailException();
+            throw new CannotSendMailException(CommonErrorCode.CANNOT_SEND_EMAIL);
         }
     }
 

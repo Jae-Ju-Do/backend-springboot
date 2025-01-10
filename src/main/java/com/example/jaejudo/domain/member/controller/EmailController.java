@@ -16,7 +16,7 @@ public class EmailController {
     private final EmailService emailService;
 
     @ResponseBody
-    @RequestMapping(value = "/members/sendEmail", method = RequestMethod.POST)
+    @PostMapping(value = "/members/sendEmail")
     public Map<String, String> sendEmail(@RequestBody @Valid EmailVerificationRequest email) {
 
         String key = emailService.sendEmail(email.getEmail());
@@ -28,7 +28,7 @@ public class EmailController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/members/verifyEmail", method = RequestMethod.POST)
+    @PostMapping(value = "/members/verifyEmail")
     public Map<String, String> verifyEmail(@RequestBody EmailVerificationRequest key) {
 
         boolean verified = emailService.verifyEmail(key.getEmail(), key.getKey());

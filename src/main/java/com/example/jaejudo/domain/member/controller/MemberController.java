@@ -6,10 +6,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,14 +17,20 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @RequestMapping(value = "/members/new", method = RequestMethod.POST)
-    public void newMember(@Valid @RequestBody JoinRequest member,
-                          BindingResult result) throws BindException {
+    @ResponseBody
+    @PostMapping(value = "/members/new")
+    public Map<String, String> newMember(@Valid @RequestBody JoinRequest member,
+                         BindingResult result) throws BindException {
 
         // todo: 여유 되면 전화번호 인증까지
         if (result.hasErrors()) {
             throw new BindException(result);
         }
         memberService.join(member);
+
+        Map<String, String> map = new HashMap<>();
+        map.put("code", "200");
+        map.put("message", "회원가입 성공");
+        return map;
     }
 }

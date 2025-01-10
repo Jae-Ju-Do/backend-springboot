@@ -1,8 +1,12 @@
 package com.example.jaejudo.global.exception;
 
+import com.example.jaejudo.global.exception.errorcode.ErrorCode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public class CannotSendMailException extends RuntimeException {
 
-    public CannotSendMailException() {
-        super("이메일을 발송할 수 없습니다.");
-    }
+    private final ErrorCode errorCode;
 }

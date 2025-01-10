@@ -2,9 +2,9 @@ package com.example.jaejudo.global.exception.handler;
 
 import com.example.jaejudo.domain.member.dto.response.ErrorResponse;
 import com.example.jaejudo.global.exception.CannotSendMailException;
+import com.example.jaejudo.global.exception.VerificationFailedException;
 import com.example.jaejudo.global.exception.errorcode.CommonErrorCode;
 import com.example.jaejudo.global.exception.errorcode.ErrorCode;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.List;
 
-@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler extends AbstractExceptionHandler {
 
@@ -42,5 +41,10 @@ public class GlobalExceptionHandler extends AbstractExceptionHandler {
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         ErrorCode errorCode = CommonErrorCode.INVALID_PARAMETER;
         return handleErrorCode(errorCode);
+    }
+
+    @ExceptionHandler(VerificationFailedException.class)
+    public ResponseEntity<ErrorResponse> handleVerificationFailedException(VerificationFailedException e) {
+        return handleErrorCode(e.getErrorCode());
     }
 }

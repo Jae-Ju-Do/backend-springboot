@@ -29,7 +29,6 @@ public class MemberController {
         memberService.join(member);
 
         Map<String, String> map = new HashMap<>();
-        map.put("code", "200");
         map.put("message", "회원가입 성공");
         return map;
     }

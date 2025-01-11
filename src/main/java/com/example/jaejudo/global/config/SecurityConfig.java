@@ -1,7 +1,9 @@
 package com.example.jaejudo.global.config;
 
-import com.example.jaejudo.domain.member.service.LoginService;
-import com.example.jaejudo.global.JSONLoginFilter;
+import com.example.jaejudo.global.JsonLoginFilter;
+import com.example.jaejudo.global.config.handler.LoginFailureHandler;
+import com.example.jaejudo.global.config.handler.LoginSuccessHandler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,8 +25,8 @@ import org.springframework.security.web.context.RequestAttributeSecurityContextR
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final LoginService loginService;
     private final AuthenticationConfiguration authenticationConfiguration;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -34,18 +36,34 @@ public class SecurityConfig {
         http.sessionManagement((session) ->
                 session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
-        // URL 권한 설정
-        http.authorizeHttpRequests(request->request
-                .requestMatchers("/**").permitAll());
-
         // JSON 로그인 설정
         http.formLogin(AbstractHttpConfigurer::disable)
                 .addFilterBefore(
-                        getJSONLoginFilter(),
+                        jsonLoginFilter(),
                         UsernamePasswordAuthenticationFilter.class
                 );
 
+        // URL 권한 설정
+        http.authorizeHttpRequests(request -> request
+                .requestMatchers("/**").permitAll());
+
         return http.build();
+    }
+
+    @Bean
+    public JsonLoginFilter jsonLoginFilter() throws Exception {
+
+        JsonLoginFilter filter = new JsonLoginFilter(objectMapper);
+        filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationSuccessHandler(loginSuccessHandler());
+        filter.setAuthenticationFailureHandler(loginFailureHandler());
+        filter.setSecurityContextRepository(
+                new DelegatingSecurityContextRepository(
+                        new RequestAttributeSecurityContextRepository(),
+                        new HttpSessionSecurityContextRepository()
+                )
+        );
+        return filter;
     }
 
     @Bean
@@ -54,17 +72,13 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JSONLoginFilter getJSONLoginFilter() throws Exception {
+    public LoginSuccessHandler loginSuccessHandler() {
+        return new LoginSuccessHandler();
+    }
 
-        JSONLoginFilter filter = new JSONLoginFilter();
-        filter.setAuthenticationManager(authenticationManager());
-        filter.setSecurityContextRepository(
-                new DelegatingSecurityContextRepository(
-                        new RequestAttributeSecurityContextRepository(),
-                        new HttpSessionSecurityContextRepository()
-                )
-        );
-        return filter;
+    @Bean
+    public LoginFailureHandler loginFailureHandler() {
+        return new LoginFailureHandler();
     }
 
     @Bean

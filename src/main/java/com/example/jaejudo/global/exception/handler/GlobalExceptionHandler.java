@@ -1,6 +1,6 @@
 package com.example.jaejudo.global.exception.handler;
 
-import com.example.jaejudo.domain.member.dto.response.ErrorResponse;
+import com.example.jaejudo.global.dto.ErrorResponse;
 import com.example.jaejudo.global.exception.CannotSendMailException;
 import com.example.jaejudo.global.exception.RedisNullException;
 import com.example.jaejudo.global.exception.VerificationFailedException;

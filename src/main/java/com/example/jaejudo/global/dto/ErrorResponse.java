@@ -1,9 +1,7 @@
-package com.example.jaejudo.domain.member.dto.response;
+package com.example.jaejudo.global.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.springframework.validation.FieldError;
 
 import java.util.List;

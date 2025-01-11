@@ -16,16 +16,15 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import java.io.IOException;
 
 @Slf4j
-public class JSONLoginFilter
+public class JsonLoginFilter
         extends AbstractAuthenticationProcessingFilter {
 
     private final ObjectMapper objectMapper;
 
-    public JSONLoginFilter() {
-
+    public JsonLoginFilter(ObjectMapper objectMapper) {
         super(new AntPathRequestMatcher("/members/loginProcessURL", "POST"));
         setSessionAuthenticationStrategy(new SessionFixationProtectionStrategy());
-        this.objectMapper = new ObjectMapper();
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -33,7 +32,6 @@ public class JSONLoginFilter
 
         try {
             LoginRequest loginDTO = objectMapper.readValue(request.getInputStream(), LoginRequest.class);
-
             UsernamePasswordAuthenticationToken authRequest = getAuthRequest(loginDTO);
 
             return this.getAuthenticationManager().authenticate(authRequest);
@@ -54,6 +52,7 @@ public class JSONLoginFilter
             throw new IllegalArgumentException("아이디 혹은 비밀번호는 공백일 수 없습니다.");
         }
 
+        log.info("Auth request: {}, {}", userId, password);
         return new UsernamePasswordAuthenticationToken(userId, password);
     }
 }

@@ -2,6 +2,7 @@ package com.example.jaejudo.global.exception.handler;
 
 import com.example.jaejudo.domain.member.dto.response.ErrorResponse;
 import com.example.jaejudo.global.exception.CannotSendMailException;
+import com.example.jaejudo.global.exception.RedisNullException;
 import com.example.jaejudo.global.exception.VerificationFailedException;
 import com.example.jaejudo.global.exception.errorcode.CommonErrorCode;
 import com.example.jaejudo.global.exception.errorcode.ErrorCode;
@@ -45,6 +46,11 @@ public class GlobalExceptionHandler extends AbstractExceptionHandler {
 
     @ExceptionHandler(VerificationFailedException.class)
     public ResponseEntity<ErrorResponse> handleVerificationFailedException(VerificationFailedException e) {
+        return handleErrorCode(e.getErrorCode());
+    }
+
+    @ExceptionHandler(RedisNullException.class)
+    public ResponseEntity<ErrorResponse> handleEmailTimeoutException(RedisNullException e) {
         return handleErrorCode(e.getErrorCode());
     }
 }

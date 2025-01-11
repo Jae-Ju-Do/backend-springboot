@@ -2,6 +2,7 @@ package com.example.jaejudo.domain.member.service;
 
 import com.example.jaejudo.global.config.RedisConfig;
 import com.example.jaejudo.global.exception.CannotSendMailException;
+import com.example.jaejudo.global.exception.RedisNullException;
 import com.example.jaejudo.global.exception.errorcode.CommonErrorCode;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -28,7 +29,7 @@ public class EmailService {
     private String emailSender;
 
     // 이메일 발송
-    public String sendEmail(String emailReceiver) {
+    public void sendEmail(String emailReceiver) {
 
         String key = generateKey();
         try {
@@ -39,8 +40,6 @@ public class EmailService {
             ValueOperations<String, Object> operations
                     = redisConfig.redisTemplate().opsForValue();
             operations.set(emailReceiver, key, 180, TimeUnit.SECONDS);
-
-            return key;
         } catch (Exception e) {
             log.error(e.getMessage());
             throw new CannotSendMailException(CommonErrorCode.CANNOT_SEND_EMAIL);
@@ -54,7 +53,10 @@ public class EmailService {
                 = redisConfig.redisTemplate().opsForValue();
         String redisKey = (String) operations.get(email);
 
-        assert redisKey != null;
+        if (redisKey == null) {
+            throw new RedisNullException(CommonErrorCode.REDIS_NULL);
+        }
+
         if (redisKey.equals(key)) {
             log.info("Verify email successful");
             return true;

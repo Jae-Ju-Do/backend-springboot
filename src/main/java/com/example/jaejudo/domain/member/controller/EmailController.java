@@ -21,10 +21,10 @@ public class EmailController {
     @PostMapping(value = "/members/sendEmail")
     public Map<String, String> sendEmail(@RequestBody @Valid EmailVerificationRequest email) {
 
-        String key = emailService.sendEmail(email.getEmail());
+        emailService.sendEmail(email.getEmail());
 
         Map<String, String> map = new HashMap<>();
-        map.put("key", key);
+        map.put("message", "이메일 발송 성공");
         return map;
     }
 
@@ -37,7 +37,7 @@ public class EmailController {
             throw new VerificationFailedException(CommonErrorCode.VERIFICATION_FAILED);
 
         Map<String, String> map = new HashMap<>();
-        map.put("message", "인증 완료");
+        map.put("message", "인증 성공.");
         return map;
     }
 }

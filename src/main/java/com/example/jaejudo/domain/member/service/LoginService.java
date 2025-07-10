@@ -22,7 +22,7 @@ public class LoginService implements UserDetailsService {
 
         Member member = memberRepository.findByUserId(username);
         if (member == null) {
-            log.error("User not found");
+            log.error("존재하지 않는 아이디: {}", username);
             throw new UsernameNotFoundException(username);
         }
 

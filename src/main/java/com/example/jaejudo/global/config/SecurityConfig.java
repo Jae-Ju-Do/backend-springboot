@@ -1,5 +1,7 @@
 package com.example.jaejudo.global.config;
 
+import com.example.jaejudo.domain.member.service.LoginService;
+import com.example.jaejudo.global.CustomAuthenticationProvider;
 import com.example.jaejudo.global.JsonLoginFilter;
 import com.example.jaejudo.global.config.handler.LoginFailureHandler;
 import com.example.jaejudo.global.config.handler.LoginSuccessHandler;
@@ -8,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -25,7 +27,7 @@ import org.springframework.security.web.context.RequestAttributeSecurityContextR
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final AuthenticationConfiguration authenticationConfiguration;
+    private final LoginService loginService;
     private final ObjectMapper objectMapper;
 
     @Bean
@@ -39,7 +41,7 @@ public class SecurityConfig {
         // JSON 로그인 설정
         http.formLogin(AbstractHttpConfigurer::disable)
                 .addFilterBefore(
-                        jsonLoginFilter(),
+                        jsonLoginFilter(http),
                         UsernamePasswordAuthenticationFilter.class
                 );
 
@@ -51,10 +53,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JsonLoginFilter jsonLoginFilter() throws Exception {
+    public JsonLoginFilter jsonLoginFilter(HttpSecurity http) throws Exception {
 
         JsonLoginFilter filter = new JsonLoginFilter(objectMapper);
-        filter.setAuthenticationManager(authenticationManager());
+        filter.setAuthenticationManager(authenticationManager(http));
         filter.setAuthenticationSuccessHandler(loginSuccessHandler());
         filter.setAuthenticationFailureHandler(loginFailureHandler());
         filter.setSecurityContextRepository(
@@ -67,18 +69,25 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(customAuthenticationProvider())
+                .build();
     }
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler();
+        return new LoginSuccessHandler(objectMapper);
     }
 
     @Bean
     public LoginFailureHandler loginFailureHandler() {
-        return new LoginFailureHandler();
+        return new LoginFailureHandler(objectMapper);
+    }
+
+    @Bean
+    public CustomAuthenticationProvider customAuthenticationProvider() {
+        return new CustomAuthenticationProvider(loginService, passwordEncoder());
     }
 
     @Bean

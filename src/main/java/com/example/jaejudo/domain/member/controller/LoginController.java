@@ -13,8 +13,8 @@ public class LoginController {
 
     private final LoginService loginService;
 
-//    @PostMapping(value = "members/login")
-//    public void login(@RequestBody LoginRequest loginRequest) {
-//
-//    }
+    @PostMapping(value = "members/login")
+    public void login(@RequestBody LoginRequest loginRequest) {
+
+    }
 }

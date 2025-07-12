@@ -3,6 +3,7 @@ package com.example.jaejudo.global.config;
 import com.example.jaejudo.domain.member.service.LoginService;
 import com.example.jaejudo.global.CustomAuthenticationProvider;
 import com.example.jaejudo.global.JsonLoginFilter;
+import com.example.jaejudo.global.JwtTokenProvider;
 import com.example.jaejudo.global.config.handler.LoginFailureHandler;
 import com.example.jaejudo.global.config.handler.LoginSuccessHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,6 +30,7 @@ public class SecurityConfig {
 
     private final LoginService loginService;
     private final ObjectMapper objectMapper;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -77,7 +79,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler(objectMapper);
+        return new LoginSuccessHandler(objectMapper, jwtTokenProvider);
     }
 
     @Bean

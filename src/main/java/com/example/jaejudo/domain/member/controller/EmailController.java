@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+@RestController("/api/auth/email")
 @RequiredArgsConstructor
 public class EmailController {
 
     private final EmailService emailService;
 
     @ResponseBody
-    @PostMapping(value = "/members/sendEmail")
+    @PostMapping(value = "/send")
     public Map<String, String> sendEmail(@RequestBody @Valid EmailVerificationRequest email) {
 
         emailService.sendEmail(email.getEmail());
@@ -29,7 +29,7 @@ public class EmailController {
     }
 
     @ResponseBody
-    @PostMapping(value = "/members/verifyEmail")
+    @PostMapping(value = "/verify")
     public Map<String, String> verifyEmail(@RequestBody EmailVerificationRequest key) {
 
         boolean verified = emailService.verifyEmail(key.getEmail(), key.getKey());

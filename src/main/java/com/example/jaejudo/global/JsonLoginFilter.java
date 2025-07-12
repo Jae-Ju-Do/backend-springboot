@@ -22,7 +22,7 @@ public class JsonLoginFilter
     private final ObjectMapper objectMapper;
 
     public JsonLoginFilter(ObjectMapper objectMapper) {
-        super(new AntPathRequestMatcher("/members/loginProcessURL", "POST"));
+        super(new AntPathRequestMatcher("/api/auth/login", "POST"));
         setSessionAuthenticationStrategy(new SessionFixationProtectionStrategy());
         this.objectMapper = objectMapper;
     }

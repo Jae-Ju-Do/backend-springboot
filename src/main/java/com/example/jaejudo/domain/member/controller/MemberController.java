@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController
+@RestController("/api/auth")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
 
     @ResponseBody
-    @PostMapping(value = "/members/new")
+    @PostMapping(value = "/signup")
     public Map<String, String> newMember(@Valid @RequestBody JoinRequest member,
                          BindingResult result) throws BindException {
 

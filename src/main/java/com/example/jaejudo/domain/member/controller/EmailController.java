@@ -33,7 +33,7 @@ public class EmailController {
     public Map<String, String> verifyEmail(@RequestBody EmailVerificationRequest key) {
 
         boolean verified = emailService.verifyEmail(key.getEmail(), key.getKey());
-        if(!verified)
+        if (!verified)
             throw new VerificationFailedException(CommonErrorCode.VERIFICATION_FAILED);
 
         Map<String, String> map = new HashMap<>();

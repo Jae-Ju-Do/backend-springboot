@@ -1,6 +1,8 @@
 spring:
   application:
     name: jaejudo
+  config:
+    import: "optional:file:.env[.properties]"
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}

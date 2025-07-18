@@ -22,7 +22,6 @@ public class MemberController {
     public Map<String, String> newMember(@Valid @RequestBody JoinRequest member,
                          BindingResult result) throws BindException {
 
-        // todo: 여유 되면 전화번호 인증까지
         if (result.hasErrors()) {
             throw new BindException(result);
         }

@@ -30,10 +30,11 @@ public class MemberService {
 
         return Member.builder()
                 .name(joinRequest.getName())
-                .number(joinRequest.getNumber())
                 .email(joinRequest.getEmail())
                 .userId(joinRequest.getUserId())
                 .password(passwordEncoder.encode(joinRequest.getPassword()))
+                .provider(null)
+                .providerId(null)
                 .build();
     }
 }

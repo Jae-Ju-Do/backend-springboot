@@ -30,7 +30,7 @@ public class EmailController {
 
     @ResponseBody
     @PostMapping(value = "/verify")
-    public Map<String, String> verifyEmail(@RequestBody EmailVerificationRequest key) {
+    public Map<String, String> verifyEmail(@RequestBody @Valid EmailVerificationRequest key) {
 
         boolean verified = emailService.verifyEmail(key.getEmail(), key.getKey());
         if (!verified)

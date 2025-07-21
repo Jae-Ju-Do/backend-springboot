@@ -1,8 +1,8 @@
 package com.example.jaejudo.global.exception.handler;
 
 import com.example.jaejudo.global.dto.ErrorResponse;
+import com.example.jaejudo.global.exception.EmailAlreadyExistsException;
 import com.example.jaejudo.global.exception.UserIdAlreadyExistsException;
-import com.example.jaejudo.global.exception.errorcode.ErrorCode;
 import com.example.jaejudo.global.exception.errorcode.MemberErrorCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +14,11 @@ public class MemberExceptionHandler extends AbstractExceptionHandler {
 
     @ExceptionHandler(UserIdAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleUserIdAlreadyExistsException(UserIdAlreadyExistsException e) {
+        return handleErrorCode(e.getErrorCode());
+    }
+
+    @ExceptionHandler(EmailAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyExistsException(EmailAlreadyExistsException e) {
         return handleErrorCode(e.getErrorCode());
     }
 

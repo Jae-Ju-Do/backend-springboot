@@ -35,7 +35,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         Map<String, String> result = new HashMap<>();
         result.put("message", "로그인 성공");
-        result.put("username", username);
+        result.put("userId", username);
         result.put("jwtToken", token);
 
         response.setStatus(HttpServletResponse.SC_OK);

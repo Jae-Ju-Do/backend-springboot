@@ -12,17 +12,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
 
     @ResponseBody
-    @PostMapping(value = "/members/new")
+    @PostMapping(value = "/signup")
     public Map<String, String> newMember(@Valid @RequestBody JoinRequest member,
                          BindingResult result) throws BindException {
 
-        // todo: 여유 되면 전화번호 인증까지
         if (result.hasErrors()) {
             throw new BindException(result);
         }

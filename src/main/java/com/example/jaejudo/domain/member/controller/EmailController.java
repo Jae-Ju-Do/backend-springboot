@@ -12,13 +12,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
+@RequestMapping("/api/auth/email")
 @RequiredArgsConstructor
 public class EmailController {
 
     private final EmailService emailService;
 
     @ResponseBody
-    @PostMapping(value = "/members/sendEmail")
+    @PostMapping(value = "/send")
     public Map<String, String> sendEmail(@RequestBody @Valid EmailVerificationRequest email) {
 
         emailService.sendEmail(email.getEmail());
@@ -29,11 +30,11 @@ public class EmailController {
     }
 
     @ResponseBody
-    @PostMapping(value = "/members/verifyEmail")
-    public Map<String, String> verifyEmail(@RequestBody EmailVerificationRequest key) {
+    @PostMapping(value = "/verify")
+    public Map<String, String> verifyEmail(@RequestBody @Valid EmailVerificationRequest key) {
 
         boolean verified = emailService.verifyEmail(key.getEmail(), key.getKey());
-        if(!verified)
+        if (!verified)
             throw new VerificationFailedException(CommonErrorCode.VERIFICATION_FAILED);
 
         Map<String, String> map = new HashMap<>();

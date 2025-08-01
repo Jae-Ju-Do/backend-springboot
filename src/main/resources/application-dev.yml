@@ -46,5 +46,5 @@ spring:
             scope:
               - email
               - profile
-            redirect-uri: ${GOOGLE_OAUTH_REDIRECTION_URI}
+            redirect-uri: ${GOOGLE_OAUTH_REDIRECTION_URI_DEV}
             authorization-grant-type: authorization_code

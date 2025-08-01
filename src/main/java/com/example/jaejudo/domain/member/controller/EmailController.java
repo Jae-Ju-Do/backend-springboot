@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@RestController("/api/auth/email")
+@RestController
+@RequestMapping("/api/auth/email")
 @RequiredArgsConstructor
 public class EmailController {
 

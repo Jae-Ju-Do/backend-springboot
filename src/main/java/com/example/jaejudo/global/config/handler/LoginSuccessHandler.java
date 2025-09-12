@@ -1,6 +1,6 @@
 package com.example.jaejudo.global.config.handler;
 
-import com.example.jaejudo.global.JwtTokenProvider;
+import com.example.jaejudo.domain.member.service.JwtTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -20,7 +20,7 @@ import java.util.Map;
 public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final ObjectMapper objectMapper;
-    private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenService jwtTokenService;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
@@ -31,12 +31,13 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         List<String> roles = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
-        String token = jwtTokenProvider.generateToken(username, roles);
+        Map<String, String> tokens = jwtTokenService.getJwtTokens(username, roles);
 
         Map<String, String> result = new HashMap<>();
         result.put("message", "로그인 성공");
         result.put("userId", username);
-        result.put("jwtToken", token);
+        result.put("accessToken", tokens.get("accessToken"));
+        result.put("refreshToken", tokens.get("refreshToken"));
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=utf-8");

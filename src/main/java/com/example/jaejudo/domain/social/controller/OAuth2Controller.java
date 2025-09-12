@@ -23,9 +23,10 @@ public class OAuth2Controller {
     @GetMapping("/callback/{provider}")
     public ResponseEntity<?> handleCallback(
             @PathVariable String provider, @RequestParam String code) {
-        String token = oAuth2ServiceFacade.loginOrJoin(provider, code);
+        Map<String, String> tokens = oAuth2ServiceFacade.loginOrJoin(provider, code);
         return ResponseEntity.ok(Map.of(
-                "jwtToken", token,
+                "accessToken", tokens.get("accessToken"),
+                "refreshToken", tokens.get("refreshToken"),
                 "message", provider + " 로그인 성공"
         ));
     }

@@ -1,4 +1,4 @@
-package com.example.jaejudo.global;
+package com.example.jaejudo.global.provider;
 
 import com.example.jaejudo.domain.member.service.LoginService;
 import lombok.AllArgsConstructor;

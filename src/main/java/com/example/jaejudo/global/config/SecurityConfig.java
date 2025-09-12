@@ -1,5 +1,6 @@
 package com.example.jaejudo.global.config;
 
+import com.example.jaejudo.domain.member.repository.BlacklistTokenRepository;
 import com.example.jaejudo.domain.member.service.JwtTokenService;
 import com.example.jaejudo.domain.member.service.LoginService;
 import com.example.jaejudo.global.filter.JwtAuthenticationFilter;
@@ -35,6 +36,7 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtTokenService jwtTokenService;
+    private final BlacklistTokenRepository blacklistTokenRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -50,7 +52,7 @@ public class SecurityConfig {
                         jsonLoginFilter(http),
                         UsernamePasswordAuthenticationFilter.class
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider, blacklistTokenRepository),
                         UsernamePasswordAuthenticationFilter.class);
 
         // OAuth2 로그인 설정

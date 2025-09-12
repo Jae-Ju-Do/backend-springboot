@@ -76,6 +76,16 @@ public class JwtTokenProvider {
         return List.of();
     }
 
+    public long getExpiration(String token) {
+        Date expiration = Jwts.parser()
+                .verifyWith(key).build()
+                .parseSignedClaims(token)
+                .getPayload()
+                .getExpiration();
+
+        return expiration.getTime() - System.currentTimeMillis();
+    }
+
     private String buildToken(String username, List<String> roles, long validity) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + validity);

@@ -1,4 +1,4 @@
-package com.example.jaejudo.global;
+package com.example.jaejudo.global.filter;
 
 import com.example.jaejudo.domain.member.dto.request.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;

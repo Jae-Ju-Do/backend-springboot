@@ -1,9 +1,11 @@
 package com.example.jaejudo.global.config;
 
+import com.example.jaejudo.domain.member.service.JwtTokenService;
 import com.example.jaejudo.domain.member.service.LoginService;
-import com.example.jaejudo.global.CustomAuthenticationProvider;
-import com.example.jaejudo.global.JsonLoginFilter;
-import com.example.jaejudo.global.JwtTokenProvider;
+import com.example.jaejudo.global.filter.JwtAuthenticationFilter;
+import com.example.jaejudo.global.provider.CustomAuthenticationProvider;
+import com.example.jaejudo.global.filter.JsonLoginFilter;
+import com.example.jaejudo.global.provider.JwtTokenProvider;
 import com.example.jaejudo.global.config.handler.LoginFailureHandler;
 import com.example.jaejudo.global.config.handler.LoginSuccessHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -32,6 +34,7 @@ public class SecurityConfig {
     private final LoginService loginService;
     private final ObjectMapper objectMapper;
     private final JwtTokenProvider jwtTokenProvider;
+    private final JwtTokenService jwtTokenService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -46,7 +49,9 @@ public class SecurityConfig {
                 .addFilterBefore(
                         jsonLoginFilter(http),
                         UsernamePasswordAuthenticationFilter.class
-                );
+                )
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
 
         // OAuth2 로그인 설정
 
@@ -83,7 +88,7 @@ public class SecurityConfig {
 
     @Bean
     public LoginSuccessHandler loginSuccessHandler() {
-        return new LoginSuccessHandler(objectMapper, jwtTokenProvider);
+        return new LoginSuccessHandler(objectMapper, jwtTokenService);
     }
 
     @Bean

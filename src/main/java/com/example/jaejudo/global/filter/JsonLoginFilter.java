@@ -43,16 +43,16 @@ public class JsonLoginFilter
 
     private static UsernamePasswordAuthenticationToken getAuthRequest(LoginRequest loginRequest) {
 
-        String userId = loginRequest.getUsername();
+        String email = loginRequest.getUsername();
         String password = loginRequest.getPassword();
 
-        if (userId == null || password == null) {
-            throw new IllegalArgumentException("유효하지 않은 아이디 혹은 비밀번호입니다.");
-        } else if (userId.isEmpty() || password.isEmpty()) {
-            throw new IllegalArgumentException("아이디 혹은 비밀번호는 공백일 수 없습니다.");
+        if (email == null || password == null) {
+            throw new IllegalArgumentException("유효하지 않은 이메일 혹은 비밀번호입니다.");
+        } else if (email.isEmpty() || password.isEmpty()) {
+            throw new IllegalArgumentException("이메일 혹은 비밀번호는 공백일 수 없습니다.");
         }
 
-        log.info("Auth request: {}, {}", userId, password);
-        return new UsernamePasswordAuthenticationToken(userId, password);
+        log.info("Auth request: {}, {}", email, password);
+        return new UsernamePasswordAuthenticationToken(email, password);
     }
 }

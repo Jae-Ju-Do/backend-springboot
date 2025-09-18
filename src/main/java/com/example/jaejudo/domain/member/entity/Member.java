@@ -20,9 +20,6 @@ public class Member {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false, unique = true)
-    private String userId;
-
     @Column(nullable = false)
     private String password;
 
@@ -33,10 +30,9 @@ public class Member {
     private String providerId;  // 소셜 로그인 고유 아이디
 
     @Builder
-    public Member(String name, String email, String userId, String password, String provider, String providerId) {
+    public Member(String name, String email, String password, String provider, String providerId) {
         this.name = name;
         this.email = email;
-        this.userId = userId;
         this.password = password;
         this.provider = provider;
         this.providerId = providerId;

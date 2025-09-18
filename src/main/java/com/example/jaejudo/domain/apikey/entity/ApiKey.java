@@ -8,9 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
-@Getter
 @Entity
 @NoArgsConstructor
+@Getter
 public class ApiKey {
 
     @Id
@@ -18,9 +18,12 @@ public class ApiKey {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String key;
+    private String apiKey;
 
+    @Column(nullable = false, unique = true)
     private String name;
+
+    @Column
     private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -33,11 +36,12 @@ public class ApiKey {
     @Column(nullable = false)
     private LocalDateTime expiresAt;
 
+    @Column(nullable = false)
     private boolean active;
 
     @Builder
-    public ApiKey(String key, String name, String description, Member member, LocalDateTime createdAt, LocalDateTime expiresAt) {
-        this.key = key;
+    public ApiKey(String apiKey, String name, String description, Member member, LocalDateTime createdAt, LocalDateTime expiresAt) {
+        this.apiKey = apiKey;
         this.name = name;
         this.description = description;
         this.member = member;

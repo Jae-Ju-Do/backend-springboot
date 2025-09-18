@@ -4,10 +4,8 @@ import com.example.jaejudo.domain.apikey.dto.request.GenerateKeyRequest;
 import com.example.jaejudo.domain.apikey.service.ApiKeyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth/key")
@@ -16,8 +14,12 @@ public class ApiKeyController {
 
     private final ApiKeyService apiKeyService;
 
-    @GetMapping("generate")
-    public ResponseEntity<?> generateKey(@RequestBody GenerateKeyRequest request) {
-        return ResponseEntity.ok(apiKeyService.generateKey(request));
+    @PostMapping("/generate")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<?> generateKey(
+            @RequestHeader("Authorization") String authorization,
+            @RequestBody GenerateKeyRequest request) {
+        String accessToken = authorization.substring(7); // "Bearer " 제거
+        return ResponseEntity.ok(apiKeyService.generateKey(request, accessToken));
     }
 }

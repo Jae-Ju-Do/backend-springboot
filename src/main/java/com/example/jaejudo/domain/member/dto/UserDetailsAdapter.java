@@ -26,6 +26,6 @@ public class UserDetailsAdapter implements UserDetails {
 
     @Override
     public String getUsername() {
-        return member.getUserId();
+        return member.getEmail();
     }
 }

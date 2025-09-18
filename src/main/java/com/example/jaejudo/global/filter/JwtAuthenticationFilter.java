@@ -42,14 +42,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         throw new JwtAuthenticationException(JwtErrorCode.EXPIRED_TOKEN);
                     }
 
-                    String userId = jwtTokenProvider.getUserIdFromToken(token);
+                    String email = jwtTokenProvider.getEmailFromToken(token);
                     List<String> roles = jwtTokenProvider.getRoles(token);
                     List<GrantedAuthority> authorities = roles.stream()
                             .map(SimpleGrantedAuthority::new)
                             .collect(Collectors.toList());
 
                     UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
-                            userId, null, authorities);
+                            email, null, authorities);
 
                     auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(auth);

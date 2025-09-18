@@ -21,9 +21,7 @@ public class MemberService {
 
     public void join(JoinRequest joinRequest) throws UserIdAlreadyExistsException {
 
-        if (memberRepository.existsByUserId(joinRequest.getUserId())) {
-            throw new UserIdAlreadyExistsException(MemberErrorCode.USER_ID_ALREADY_EXISTS);
-        } else if (memberRepository.existsByEmail(joinRequest.getEmail())) {
+        if (memberRepository.existsByEmail(joinRequest.getEmail())) {
             throw new EmailAlreadyExistsException(MemberErrorCode.EMAIL_ALREADY_EXISTS);
         }
 
@@ -39,7 +37,6 @@ public class MemberService {
         return Member.builder()
                 .name(joinRequest.getName())
                 .email(joinRequest.getEmail())
-                .userId(joinRequest.getUserId())
                 .password(passwordEncoder.encode(joinRequest.getPassword()))
                 .provider(null)
                 .providerId(null)

@@ -23,9 +23,6 @@ public class ApiKey {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Column
-    private String description;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -40,10 +37,9 @@ public class ApiKey {
     private boolean active;
 
     @Builder
-    public ApiKey(String apiKey, String name, String description, Member member, LocalDateTime createdAt, LocalDateTime expiresAt) {
+    public ApiKey(String apiKey, String name, Member member, LocalDateTime createdAt, LocalDateTime expiresAt) {
         this.apiKey = apiKey;
         this.name = name;
-        this.description = description;
         this.member = member;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;

@@ -5,8 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GenerateKeyRequest {
+public class DeleteKeyRequest {
 
-    private String name;
-    private long validDate;
+    String name;
 }

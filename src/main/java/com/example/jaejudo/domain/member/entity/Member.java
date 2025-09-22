@@ -29,13 +29,16 @@ public class Member {
     @Column
     private String providerId;  // 소셜 로그인 고유 아이디
 
+    private String profileImageUrl;
+
     @Builder
-    public Member(String name, String email, String password, String provider, String providerId) {
+    public Member(String name, String email, String password, String provider, String providerId, String profileImageUrl) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.provider = provider;
         this.providerId = providerId;
+        this.profileImageUrl = profileImageUrl;
     }
 
     public boolean isSocialMember() {

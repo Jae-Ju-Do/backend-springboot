@@ -19,11 +19,11 @@ public class JwtTokenService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public Map<String, String> getJwtTokens(String userId, List<String> roles) {
-        String accessToken = jwtTokenProvider.generateAccessToken(userId, roles);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(userId, roles);
+    public Map<String, String> getJwtTokens(String email, List<String> roles) {
+        String accessToken = jwtTokenProvider.generateAccessToken(email, roles);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(email, roles);
 
-        refreshTokenRepository.save(userId, refreshToken, jwtTokenProvider.getRefreshTokenValidity());
+        refreshTokenRepository.save(email, refreshToken, jwtTokenProvider.getRefreshTokenValidity());
         return Map.of("accessToken", accessToken, "refreshToken", refreshToken);
     }
 
@@ -33,14 +33,14 @@ public class JwtTokenService {
             throw new JwtAuthenticationException(JwtErrorCode.INVALID_SIGNATURE);
         }
 
-        String userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
-        String storedToken = refreshTokenRepository.findByUserId(userId);
+        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        String storedToken = refreshTokenRepository.findByEmail(email);
         if (storedToken == null || !storedToken.equals(refreshToken)) {
             log.error("Expired refresh token");
             throw new JwtAuthenticationException(JwtErrorCode.EXPIRED_TOKEN);
         }
 
         List<String> roles = jwtTokenProvider.getRoles(refreshToken);
-        return getJwtTokens(userId, roles);
+        return getJwtTokens(email, roles);
     }
 }

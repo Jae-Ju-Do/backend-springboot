@@ -15,8 +15,8 @@ public class LogoutService {
     private final BlacklistTokenRepository blacklistTokenRepository;
 
     public void logout(String accessToken) {
-        String userId = jwtTokenProvider.getUserIdFromToken(accessToken);
-        refreshTokenRepository.delete(userId);
+        String email = jwtTokenProvider.getEmailFromToken(accessToken);
+        refreshTokenRepository.delete(email);
 
         long expiration = jwtTokenProvider.getExpiration(accessToken);
         blacklistTokenRepository.save(accessToken, expiration);

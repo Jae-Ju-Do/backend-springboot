@@ -2,6 +2,7 @@ package com.example.jaejudo.global.config.handler;
 
 import com.example.jaejudo.domain.member.service.JwtTokenService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,16 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 .toList();
         Map<String, String> tokens = jwtTokenService.getJwtTokens(username, roles);
 
+        Cookie refreshCookie = new Cookie("refreshToken", tokens.get("refreshToken"));
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(true);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(60 * 60 * 24 * 14);
+        response.addCookie(refreshCookie);
+
         Map<String, String> result = new HashMap<>();
         result.put("message", "로그인 성공");
-        result.put("userId", username);
         result.put("accessToken", tokens.get("accessToken"));
-        result.put("refreshToken", tokens.get("refreshToken"));
 
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType("application/json; charset=utf-8");

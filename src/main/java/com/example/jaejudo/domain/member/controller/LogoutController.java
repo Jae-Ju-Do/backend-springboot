@@ -3,10 +3,7 @@ package com.example.jaejudo.domain.member.controller;
 import com.example.jaejudo.domain.member.service.LogoutService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -17,7 +14,7 @@ public class LogoutController {
 
     private final LogoutService logoutService;
 
-    @PostMapping("/logout")
+    @DeleteMapping("/logout")
     public ResponseEntity<?> logout(@RequestHeader("Authorization") String authorization) {
         String accessToken = authorization.substring(7); // "Bearer " 제거
         logoutService.logout(accessToken);

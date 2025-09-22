@@ -32,7 +32,7 @@ public class OAuth2ServiceFacade {
         Member member = memberRepository.findByProviderAndProviderId(
                 memberInfo.provider(), memberInfo.providerId()
         ).orElseGet(() -> join(memberInfo));
-        return jwtTokenService.getJwtTokens(member.getUserId(), List.of("USER"));
+        return jwtTokenService.getJwtTokens(member.getEmail(), List.of("USER"));
     }
 
     private OAuth2Service findService(String provider) {
@@ -47,7 +47,6 @@ public class OAuth2ServiceFacade {
         Member member = Member.builder()
                 .name(memberInfo.name())
                 .email(memberInfo.email())
-                .userId(memberInfo.provider() + "_" + memberInfo.providerId())
                 .password(passwordEncoder.encode(memberInfo.provider() + "_" + generatePassword()))
                 .provider(memberInfo.provider())
                 .providerId(memberInfo.providerId())

@@ -13,16 +13,16 @@ public class RefreshTokenRepository {
     private final ValueOperations<String, Object> valueOperations;
     private static final String PREFIX = "Refresh:";
 
-    public void save(String userId, String refreshToken, long durationMillis) {
-        valueOperations.set(PREFIX + userId, refreshToken, durationMillis, TimeUnit.MILLISECONDS);
+    public void save(String email, String refreshToken, long durationMillis) {
+        valueOperations.set(PREFIX + email, refreshToken, durationMillis, TimeUnit.MILLISECONDS);
     }
 
-    public String findByUserId(String userId) {
-        Object value = valueOperations.get(PREFIX + userId);
+    public String findByEmail(String email) {
+        Object value = valueOperations.get(PREFIX + email);
         return value != null ? value.toString() : null;
     }
 
-    public void delete(String userId) {
-        valueOperations.getOperations().delete(PREFIX + userId);
+    public void delete(String email) {
+        valueOperations.getOperations().delete(PREFIX + email);
     }
 }

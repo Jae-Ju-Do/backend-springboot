@@ -2,15 +2,18 @@ package com.example.jaejudo.global.provider;
 
 import com.example.jaejudo.global.exception.JwtAuthenticationException;
 import com.example.jaejudo.global.exception.errorcode.JwtErrorCode;
+import com.example.jaejudo.global.properties.JwtProperties;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.security.Keys;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
 
@@ -18,18 +21,25 @@ import java.util.List;
 @Component
 public class JwtTokenProvider {
 
-    private final SecretKey key = Jwts.SIG.HS256.key().build();
+    private final SecretKey key;
     @Getter
-    private final long accessTokenValidity = 1000L * 60 * 30; // 30분
+    private final long accessTokenValidity;
     @Getter
-    private final long refreshTokenValidity = 1000L * 60 * 60 * 24 * 14; // 14일
+    private final long refreshTokenValidity;
 
-    public String generateAccessToken(String username, List<String> roles) {
-        return buildToken(username, roles, accessTokenValidity);
+    public JwtTokenProvider(JwtProperties jwtProperties) {
+        this.key = Keys.hmacShaKeyFor(jwtProperties.getSecret()
+                .getBytes(StandardCharsets.UTF_8));
+        this.accessTokenValidity = jwtProperties.getAccessTokenValidity(); // 30분
+        this.refreshTokenValidity = jwtProperties.getRefreshTokenValidity(); // 14일
     }
 
-    public String generateRefreshToken(String username, List<String> roles) {
-        return buildToken(username, roles, refreshTokenValidity);
+    public String generateAccessToken(String emmail, List<String> roles) {
+        return buildToken(emmail, roles, accessTokenValidity);
+    }
+
+    public String generateRefreshToken(String email, List<String> roles) {
+        return buildToken(email, roles, refreshTokenValidity);
     }
 
     public boolean validateToken(String token) {
@@ -54,7 +64,7 @@ public class JwtTokenProvider {
         }
     }
 
-    public String getUserIdFromToken(String token) {
+    public String getEmailFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(key).build()
                 .parseSignedClaims(token).getPayload()

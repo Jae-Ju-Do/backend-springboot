@@ -20,9 +20,9 @@ public class LoginService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Member member = memberRepository.findByUserId(username);
+        Member member = memberRepository.findByEmail(username);
         if (member == null) {
-            log.error("존재하지 않는 아이디: {}", username);
+            log.error("존재하지 않는 이메일: {}", username);
             throw new UsernameNotFoundException(username);
         }
 

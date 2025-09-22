@@ -48,3 +48,7 @@ spring:
               - profile
             redirect-uri: ${GOOGLE_OAUTH_REDIRECTION_URI_DEV}
             authorization-grant-type: authorization_code
+jwt:
+  secret: ${JWT_SECRET_KEY}
+  access-token-validity: 1800000
+  refresh-token-validity: 1209600000

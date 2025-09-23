@@ -6,8 +6,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
-    url: ${DB_URL}
+    password: ${DB_LOCAL_PASSWORD}
+    url: ${DB_LOCAL_URL}
   jpa:
     hibernate:
       ddl-auto: update

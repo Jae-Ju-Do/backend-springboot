@@ -6,7 +6,8 @@ public record OAuth2MemberInfo (
         String provider,
         String providerId,
         String email,
-        String name
+        String name,
+        String picture
 ) {
 
     @Builder

@@ -13,4 +13,5 @@ public interface ApiKeyRepository extends JpaRepository<ApiKey, Long> {
     Optional<ApiKey> findByMemberAndName(Member member, String name);
     boolean existsByMemberAndName(Member member, String name);
     List<ApiKey> findAllByMemberOrderByCreatedAtDesc(Member member);
+    List<ApiKey> findAllByMember(Member member);
 }

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ~/.bashrc
+source /home/ec2-user/.bashrc
 EnvironmentFile=/home/ec2-user/jaejudo/.env
 
 ROOT_PATH="/home/ec2-user/jaejudo"

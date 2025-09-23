@@ -1,5 +1,7 @@
 package com.example.jaejudo.domain.member.service;
 
+import com.example.jaejudo.domain.apikey.entity.ApiKey;
+import com.example.jaejudo.domain.apikey.repository.ApiKeyRepository;
 import com.example.jaejudo.domain.member.dto.request.JoinRequest;
 import com.example.jaejudo.domain.member.dto.response.MemberResponse;
 import com.example.jaejudo.domain.member.entity.Member;
@@ -14,6 +16,8 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -21,6 +25,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final ApiKeyRepository apiKeyRepository;
 
     public void join(JoinRequest joinRequest) throws UserIdAlreadyExistsException {
         if (memberRepository.existsByEmail(joinRequest.getEmail())) {
@@ -43,6 +48,8 @@ public class MemberService {
     public void deleteMember(String accessToken) {
         Member member = memberRepository
                 .findByEmail(jwtTokenProvider.getEmailFromToken(accessToken));
+        List<ApiKey> apiKeys = apiKeyRepository.findAllByMember(member);
+        apiKeyRepository.deleteAll(apiKeys);
         memberRepository.delete(member);
     }
 

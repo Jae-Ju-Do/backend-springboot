@@ -14,7 +14,7 @@ on:
     branches: [ "master" ]
 
 env:
-  AWS_REGIOON: ap-northeast-2
+  AWS_REGION: ap-northeast-2
   AWS_S3_BUCKET: jaejudo-bucket
   AWS_CODE_DEPLOY_APPLICATION: Jaejudo
   AWS_CODE_DEPLOY_GROUP: jaejudo-group
@@ -36,9 +36,12 @@ jobs:
         
     - name: gradlew에 실행 권한 부여
       run: chmod +x ./gradlew
+
+    - name: 스크립트 실행 권한 부여
+      run: chmod +x scripts/*.sh
       
     - name: 프로젝트 빌드
-      run: ./gradlew clea build -x test
+      run: ./gradlew clean build -x test
 
     - name: AWS credentials 설정
       uses: aws-actions/configure-aws-credentials@v4

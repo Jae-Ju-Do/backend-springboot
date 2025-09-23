@@ -1,5 +1,7 @@
 #!/bin/bash
 
+source ~/.bashrc
+
 ROOT_PATH="/home/ec2-user/jaejudo"
 JAR="$ROOT_PATH/build/libs/application.jar"
 

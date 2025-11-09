@@ -37,7 +37,6 @@ public class S3Service {
         try (InputStream inputStream = file.getInputStream()) {
             amazonS3.putObject(new PutObjectRequest(bucket, fileName, inputStream, metadata));
         }
-
         return fileName; // S3 Key 반환
     }
 

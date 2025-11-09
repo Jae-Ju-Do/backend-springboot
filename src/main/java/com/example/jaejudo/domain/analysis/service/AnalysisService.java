@@ -4,6 +4,9 @@ import com.example.jaejudo.domain.analysis.enums.JobStatus;
 import com.example.jaejudo.domain.member.entity.Member;
 import com.example.jaejudo.domain.member.repository.MemberRepository;
 import com.example.jaejudo.global.provider.JwtTokenProvider;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import com.example.jaejudo.domain.analysis.dto.AnalysisDto.*;
@@ -18,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -33,12 +37,13 @@ public class AnalysisService {
     private final JwtTokenProvider jwtTokenProvider;
     private final RestTemplate restTemplate;
 
+    private static final String COOKIE_VALUE = "appproxy_permit=\"NGJiYjY1YjBmZTdhMDkyNmUyOGE0NmQ2Njg4ZWNiMjU4ZmNmYmY0MDNhMzAyOTJjYjM0OWExMjk2YTVkYzE0Zg==\"";
+
     @Value("${fastapi.url}")
     private String fastApiUrl;
 
     /**
      * 1. 분석 요청 시작
-     * 변경: Long memberId -> String accessToken
      */
     @Transactional
     public JobResponse initiateAnalysis(MultipartFile file, String accessToken) {
@@ -55,11 +60,11 @@ public class AnalysisService {
         Job job = Job.builder()
                 .jobId(jobId)
                 .member(member) // 비회원이면 null
+                .createdAt(LocalDateTime.now())
                 .s3ExeKey(s3Key)
                 .status(JobStatus.PROCESSING)
                 .build();
         jobRepository.save(job);
-
         triggerFastApi(new AnalysisRequestMessage(jobId, s3Key));
 
         return new JobResponse(jobId, JobStatus.PROCESSING, "분석이 시작되었습니다.");
@@ -69,7 +74,15 @@ public class AnalysisService {
     public void triggerFastApi(AnalysisRequestMessage message) {
         try {
             String requestUrl = fastApiUrl + "/api/v1/workflow/start";
-            restTemplate.postForLocation(requestUrl, message);
+
+            // 헤더 설정
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_JSON);
+            headers.add("Cookie", COOKIE_VALUE); // 쿠키 추가
+
+            // 요청 엔티티 생성 (Body + Header)
+            HttpEntity<AnalysisRequestMessage> requestEntity = new HttpEntity<>(message, headers);
+            restTemplate.postForEntity(requestUrl, requestEntity, Void.class);
             log.info("FastAPI trigger success for jobId: {}", message.getJobId());
         } catch (Exception e) {
             log.error("FastAPI trigger failed for jobId: {}", message.getJobId(), e);
@@ -77,7 +90,7 @@ public class AnalysisService {
     }
 
     /**
-     * 2. 작업 상태 상세 조회 (기존과 동일)
+     * 2. 작업 상태 상세 조회
      */
     @Transactional(readOnly = true)
     public JobDetailResponse getJobStatus(String jobId) {
@@ -96,7 +109,7 @@ public class AnalysisService {
     }
 
     /**
-     * 3. FastAPI 콜백 처리 (기존과 동일)
+     * 3. FastAPI 콜백 처리
      */
     @Transactional
     public void handleAnalysisCompletion(AnalysisCompleteRequest request) {
@@ -114,7 +127,6 @@ public class AnalysisService {
 
     /**
      * 4. 특정 회원의 분석 내역 조회
-     * 변경: Long memberId -> String accessToken
      */
     @Transactional(readOnly = true)
     public List<JobDetailResponse> getMemberHistory(String accessToken) {

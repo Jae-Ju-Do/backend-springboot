@@ -48,6 +48,17 @@ spring:
               - profile
             redirect-uri: ${GOOGLE_OAUTH_REDIRECTION_URI_DEV}
             authorization-grant-type: authorization_code
+cloud:
+  aws:
+    s3:
+      bucket: ${AWS_S3_BUCKET_NAME}  # 예: my-analysis-bucket
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2         # 서울 리전
+fastapi:
+  url: ${FASTAPI_URL}                # 예: http://localhost:8000
 jwt:
   secret: ${JWT_SECRET_KEY}
   access-token-validity: 1800000

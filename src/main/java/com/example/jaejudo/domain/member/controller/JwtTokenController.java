@@ -19,6 +19,7 @@ public class JwtTokenController {
 
     @PostMapping("/reissue")
     public ResponseEntity<?> reissue(@CookieValue(name = "refreshToken", required = false) String refreshToken) {
+
         if (refreshToken == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is required");
         }

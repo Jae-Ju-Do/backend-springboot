@@ -26,7 +26,14 @@ public class AnalysisDto {
         private LocalDateTime createdAt;
         private LocalDateTime completedAt;
         private String downloadUrl; // Presigned URL
+        private String message;
         private String errorMessage;
+    }
+
+    @Getter @NoArgsConstructor
+    public static class AnalysisProgressRequest {
+        private String jobId;
+        private JobStatus status;
     }
 
     // FastAPI 요청 메시지

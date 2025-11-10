@@ -1,5 +1,6 @@
 package com.example.jaejudo.domain.analysis.controller;
 
+import com.example.jaejudo.domain.analysis.dto.AnalysisDto;
 import com.example.jaejudo.domain.analysis.dto.AnalysisDto.AnalysisCompleteRequest;
 import com.example.jaejudo.domain.analysis.dto.AnalysisDto.JobDetailResponse;
 import com.example.jaejudo.domain.analysis.dto.AnalysisDto.JobResponse;
@@ -53,6 +54,16 @@ public class AnalysisController {
             return ResponseEntity.status(401).build();
         }
         return ResponseEntity.ok(history);
+    }
+
+    /**
+     * FastAPI 웹훅 (중간 진행 상태 업데이트)
+     * FastAPI가 이 엔드포인트를 호출하여 Redis 상태를 업데이트합니다.
+     */
+    @PostMapping("/progress")
+    public ResponseEntity<Void> updateProgress(@RequestBody AnalysisDto.AnalysisProgressRequest request) {
+        analysisService.updateJobProgress(request);
+        return ResponseEntity.ok().build();
     }
 
     /**

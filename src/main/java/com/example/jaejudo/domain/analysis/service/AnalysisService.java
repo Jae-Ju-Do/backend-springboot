@@ -4,6 +4,7 @@ import com.example.jaejudo.domain.analysis.enums.JobStatus;
 import com.example.jaejudo.domain.member.entity.Member;
 import com.example.jaejudo.domain.member.repository.MemberRepository;
 import com.example.jaejudo.global.provider.JwtTokenProvider;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,6 +25,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,8 +38,10 @@ public class AnalysisService {
     private final MemberRepository memberRepository; // 서비스 계층에서만 리포지토리 접근
     private final JwtTokenProvider jwtTokenProvider;
     private final RestTemplate restTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
     private static final String COOKIE_VALUE = "appproxy_permit=\"NGJiYjY1YjBmZTdhMDkyNmUyOGE0NmQ2Njg4ZWNiMjU4ZmNmYmY0MDNhMzAyOTJjYjM0OWExMjk2YTVkYzE0Zg==\"";
+    private final long STATUS_TTL_SECONDS = 60 * 60;
 
     @Value("${fastapi.url}")
     private String fastApiUrl;
@@ -65,8 +69,17 @@ public class AnalysisService {
                 .status(JobStatus.PROCESSING)
                 .build();
         jobRepository.save(job);
-        triggerFastApi(new AnalysisRequestMessage(jobId, s3Key));
 
+        // [Redis] Redis에 상세 상태 'QUEUED' 저장 (1시간)
+        String statusKey = getJobStatusKey(jobId);
+        redisTemplate.opsForValue().set(
+                statusKey,
+                JobStatus.QUEUED.name(), // "QUEUED"
+                STATUS_TTL_SECONDS,
+                TimeUnit.SECONDS
+        );
+
+        triggerFastApi(new AnalysisRequestMessage(jobId, s3Key));
         return new JobResponse(jobId, JobStatus.PROCESSING, "분석이 시작되었습니다.");
     }
 
@@ -97,19 +110,47 @@ public class AnalysisService {
         Job job = jobRepository.findByJobId(jobId)
                 .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 Job ID입니다."));
 
+        String statusKey = getJobStatusKey(jobId);
+        String statusString = (String) redisTemplate.opsForValue().get(statusKey);
+
+        JobStatus status;
+        if (statusString != null)
+            status = JobStatus.valueOf(statusString);
+        else
+            status = job.getStatus();
+
         return JobDetailResponse.builder()
                 .jobId(job.getJobId())
-                .status(job.getStatus())
+                .status(status)
                 .createdAt(job.getCreatedAt())
                 .completedAt(job.getCompletedAt())
                 .downloadUrl(job.getStatus() == JobStatus.COMPLETED ?
                         s3Service.generatePresignedUrl(job.getS3PdfKey()) : null)
+                .message(status.getDescription())
                 .errorMessage(job.getErrorMessage())
                 .build();
     }
 
     /**
-     * 3. FastAPI 콜백 처리
+     * 3. FastAPI 중간 콜백 (Redis만 업데이트)
+     */
+    public void updateJobProgress(AnalysisProgressRequest request) {
+        String jobId = request.getJobId();
+        JobStatus status = request.getStatus();
+        String statusKey = getJobStatusKey(request.getJobId());
+
+        // [Redis] 상세 상태만 업데이트 (TTL 갱신)
+        redisTemplate.opsForValue().set(
+                statusKey,
+                status.name(), // 예: "DECOMPILING"
+                STATUS_TTL_SECONDS,
+                TimeUnit.SECONDS
+        );
+        log.info("Job Progress Update [Redis]: {} -> {}", jobId, status);
+    }
+
+    /**
+     * 4. FastAPI 최종 콜백 처리
      */
     @Transactional
     public void handleAnalysisCompletion(AnalysisCompleteRequest request) {
@@ -123,10 +164,11 @@ public class AnalysisService {
             job.fail(request.getErrorMessage());
             log.error("분석 실패: {}, 에러: {}", job.getJobId(), request.getErrorMessage());
         }
+        redisTemplate.delete(getJobStatusKey(request.getJobId()));
     }
 
     /**
-     * 4. 특정 회원의 분석 내역 조회
+     * 5. 특정 회원의 분석 내역 조회
      */
     @Transactional(readOnly = true)
     public List<JobDetailResponse> getMemberHistory(String accessToken) {
@@ -145,6 +187,7 @@ public class AnalysisService {
                         .completedAt(job.getCompletedAt())
                         .downloadUrl(job.getStatus() == JobStatus.COMPLETED ?
                                 s3Service.generatePresignedUrl(job.getS3PdfKey()) : null)
+                        .message(job.getStatus().getDescription())
                         .build())
                 .collect(Collectors.toList());
     }
@@ -156,5 +199,10 @@ public class AnalysisService {
             return memberRepository.findByEmail(email);
         }
         return null;
+    }
+
+    // Redis 키를 만드는 헬퍼 메서드
+    private String getJobStatusKey(String jobId) {
+        return "job:status:" + jobId;
     }
 }
